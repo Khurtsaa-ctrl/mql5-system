@@ -1,0 +1,45 @@
+name: MQL5 ajil hyanagch
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"     # 15 minut tutam
+  workflow_dispatch:            # gar aar ajilluulah tovch
+
+concurrency:
+  group: mql5-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Umnuh ajillagaanii ugugdliin sanguud sergeene
+      - name: Restore database
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.mql5_system.db
+          key: mql5-db-${{ github.run_id }}
+          restore-keys: |
+            mql5-db-
+
+      - name: Run watcher
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT: ${{ secrets.TELEGRAM_CHAT }}
+        run: python watch_once.py
+
+      - name: Save database
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.mql5_system.db
+          key: mql5-db-${{ github.run_id }}
