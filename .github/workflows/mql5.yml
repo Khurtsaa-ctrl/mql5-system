@@ -2,7 +2,7 @@ name: MQL5 ajil hyanagch
 
 on:
   schedule:
-    - cron: "*/15 * * * *"     # 15 minut tutam
+    - cron: "*/5 * * * *"     # 5 minut tutam
   workflow_dispatch:            # gar aar ajilluulah tovch
 
 concurrency:
